@@ -28,6 +28,7 @@ endif
 AM_CFLAGS = \
   $(XORG_SERVER_CFLAGS) \
   $(XRDP_CFLAGS) \
+  $(XXHASH_CFLAGS) \
   -DPACKAGE_VERSION_MAJOR=@package_version_major@ \
   -DPACKAGE_VERSION_MINOR=@package_version_minor@ \
   -DPACKAGE_VERSION_PATCHLEVEL=@package_version_patchlevel@ \
@@ -95,4 +96,4 @@ rdpMisc.c rdpReg.c rdpComposite.c rdpGlyphs.c rdpPixmap.c rdpInput.c \
 rdpClientCon.c rdpCapture.c rdpTrapezoids.c rdpTriangles.c \
 rdpCompositeRects.c rdpXv.c rdpSimd.c $(EXTRA_SOURCES)
 
-libxorgxrdp_la_LIBADD = $(ASMLIB) $(EGLLIB)
+libxorgxrdp_la_LIBADD = $(ASMLIB) $(EGLLIB) $(XXHASH_LIBS)

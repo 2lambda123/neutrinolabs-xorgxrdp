@@ -122,6 +122,8 @@ AM_CONDITIONAL(WITH_GLAMOR, [test x$enable_glamor = xyes])
 AM_CONDITIONAL(WITH_SIMD_AMD64, [test x$simd_arch = xx86_64])
 AM_CONDITIONAL(WITH_SIMD_X86, [test x$simd_arch = xi386])
 
+PKG_CHECK_MODULES([XXHASH],  [libxxhash >= 0.8.0])
+
 AC_CONFIG_FILES([Makefile
                  module/Makefile
                  module/amd64/Makefile

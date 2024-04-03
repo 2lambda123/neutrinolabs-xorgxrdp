@@ -46,6 +46,8 @@ capture
 #include "rdpMisc.h"
 #include "rdpCapture.h"
 
+#include <xxhash.h>
+
 #if defined(XORGXRDP_GLAMOR)
 #include "rdpEgl.h"
 #include <glamor.h>
@@ -60,6 +62,8 @@ capture
     R = (pixel >> 16) & UCHAR_MAX; \
     G = (pixel >>  8) & UCHAR_MAX; \
     B = (pixel >>  0) & UCHAR_MAX;
+
+#define XXH32_SEED 0
 
 /******************************************************************************/
 /* copy rects with no error checking */
@@ -913,7 +917,6 @@ rdpCapture2(rdpClientCon *clientCon, RegionPtr in_reg, BoxPtr *out_rects,
             }
             else
             {
-                crc = crc_start();
                 if (rcode == rgnPART)
                 {
                     LLOGLN(10, ("rdpCapture2: rgnPART"));
@@ -922,8 +925,7 @@ rdpCapture2(rdpClientCon *clientCon, RegionPtr in_reg, BoxPtr *out_rects,
                     rdpRegionIntersect(&tile_reg, in_reg, &tile_reg);
                     rects = REGION_RECTS(&tile_reg);
                     num_rects = REGION_NUM_RECTS(&tile_reg);
-                    crc = crc_process_data(crc, rects,
-                                           num_rects * sizeof(BoxRec));
+                    crc = XXH32(rects, num_rects * sizeof(BoxRec), XXH32_SEED);
                     rdpCopyBox_a8r8g8b8_to_yuvalp(x, y,
                                                   src, src_stride,
                                                   dst, dst_stride,
@@ -939,8 +941,7 @@ rdpCapture2(rdpClientCon *clientCon, RegionPtr in_reg, BoxPtr *out_rects,
                                                   &rect, 1);
                 }
                 crc_dst = dst + (y << 8) * (dst_stride >> 8) + (x << 8);
-                crc = crc_process_data(crc, crc_dst, 64 * 64 * 4);
-                crc = crc_end(crc);
+                crc = XXH32(crc_dst, 64 * 64 * 4, XXH32_SEED);
                 crc_offset = (y / XRDP_RFX_ALIGN) * crc_stride 
                              + (x / XRDP_RFX_ALIGN);
                 LLOGLN(10, ("rdpCapture2: crc 0x%8.8x 0x%8.8x",
