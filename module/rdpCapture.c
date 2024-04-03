@@ -64,6 +64,7 @@ capture
     B = (pixel >>  0) & UCHAR_MAX;
 
 #define XXH32_SEED 0
+#define XXH64_SEED 0
 
 /******************************************************************************/
 /* copy rects with no error checking */
@@ -852,7 +853,7 @@ rdpCapture2(rdpClientCon *clientCon, RegionPtr in_reg, BoxPtr *out_rects,
     int dst_stride;
     int crc_offset;
     int crc_stride;
-    int crc;
+    uint64_t crc;
     int num_crcs;
     int mon_index;
 
@@ -891,7 +892,7 @@ rdpCapture2(rdpClientCon *clientCon, RegionPtr in_reg, BoxPtr *out_rects,
         /* resize the crc list */
         clientCon->num_rfx_crcs_alloc[mon_index] = num_crcs;
         free(clientCon->rfx_crcs[mon_index]);
-        clientCon->rfx_crcs[mon_index] = g_new0(int, num_crcs);
+        clientCon->rfx_crcs[mon_index] = g_new0(uint64_t, num_crcs);
     }
 
     extents_rect = *rdpRegionExtents(in_reg);
@@ -925,7 +926,7 @@ rdpCapture2(rdpClientCon *clientCon, RegionPtr in_reg, BoxPtr *out_rects,
                     rdpRegionIntersect(&tile_reg, in_reg, &tile_reg);
                     rects = REGION_RECTS(&tile_reg);
                     num_rects = REGION_NUM_RECTS(&tile_reg);
-                    crc = XXH32(rects, num_rects * sizeof(BoxRec), XXH32_SEED);
+                    crc = XXH64(rects, num_rects * sizeof(BoxRec), XXH64_SEED);
                     rdpCopyBox_a8r8g8b8_to_yuvalp(x, y,
                                                   src, src_stride,
                                                   dst, dst_stride,
@@ -941,10 +942,10 @@ rdpCapture2(rdpClientCon *clientCon, RegionPtr in_reg, BoxPtr *out_rects,
                                                   &rect, 1);
                 }
                 crc_dst = dst + (y << 8) * (dst_stride >> 8) + (x << 8);
-                crc = XXH32(crc_dst, 64 * 64 * 4, XXH32_SEED);
+                crc = XXH64(crc_dst, 64 * 64 * 4, XXH64_SEED);
                 crc_offset = (y / XRDP_RFX_ALIGN) * crc_stride 
                              + (x / XRDP_RFX_ALIGN);
-                LLOGLN(10, ("rdpCapture2: crc 0x%8.8x 0x%8.8x",
+                LLOGLN(10, ("rdpCapture2: xxhash 0x%" PRIx64 " 0x%" PRIx64,
                        crc, clientCon->rfx_crcs[mon_index][crc_offset]));
                 if (crc == clientCon->rfx_crcs[mon_index][crc_offset])
                 {
