@@ -32,10 +32,14 @@ PACKAGES="$PACKAGES \
 case "$ARCH"
 in
     amd64)
+        PACKAGES="$PACKAGES \
+            libxxhash-dev \
+			"
         ;;
     i386)
         PACKAGES="$PACKAGES \
             gcc-multilib \
+            libxxhash-dev:i386 \
             "
         dpkg --add-architecture i386
         dpkg --print-architecture
