@@ -194,6 +194,7 @@ rdpInputMouse(rdpPtr dev, int msg,
               long param3, long param4)
 {
     rdpPointer *pointer;
+    int scroll_delta;
 
     LLOGLN(10, ("rdpInputMouse: msg %d param1 %ld param2 %ld param3 %ld param4 %ld",
                 msg, param1, param2, param3, param4));
@@ -280,10 +281,20 @@ rdpInputMouse(rdpPtr dev, int msg,
             PtrAddEvent(pointer);
             break;
         case WM_TOUCH_VSCROLL:
-            PtrAddScrollEvent(pointer, TRUE, param3);
+            scroll_delta = param3;
+            if (dev->reverse_touch_vscroll)
+            {
+                scroll_delta = -scroll_delta;
+            }
+            PtrAddScrollEvent(pointer, TRUE, scroll_delta);
             break;
         case WM_TOUCH_HSCROLL:
-            PtrAddScrollEvent(pointer, FALSE, param3);
+            scroll_delta = param3;
+            if (dev->reverse_touch_hscroll)
+            {
+                scroll_delta = -scroll_delta;
+            }
+            PtrAddScrollEvent(pointer, FALSE, scroll_delta);
             break;
     }
     return 0;
