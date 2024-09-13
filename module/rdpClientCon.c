@@ -638,33 +638,34 @@ rdpClientConSendCaps(rdpPtr dev, rdpClientCon *clientCon)
     int len;
     int rv;
     int cap_count;
-    int cap_bytes;
 
     make_stream(ls);
     init_stream(ls, 8192);
     s_push_layer(ls, iso_hdr, 8);
 
     cap_count = 0;
-    cap_bytes = 0;
 
 #if 0
     out_uint16_le(ls, 0);
     out_uint16_le(ls, 4);
     cap_count++;
-    cap_bytes += 4;
 
     out_uint16_le(ls, 1);
     out_uint16_le(ls, 4);
     cap_count++;
-    cap_bytes += 4;
 #endif
+
+    out_uint16_le(ls, 100);   /* Version capability */
+    out_uint16_le(ls, 2 + 2 + 4);
+    out_uint32_le(ls, CLIENT_INFO_CURRENT_VERSION);
+    cap_count++;
 
     s_mark_end(ls);
     len = (int)(ls->end - ls->data);
     s_pop_layer(ls, iso_hdr);
     out_uint16_le(ls, 2); /* caps */
     out_uint16_le(ls, cap_count); /* num caps */
-    out_uint32_le(ls, cap_bytes); /* caps len after header */
+    out_uint32_le(ls, len - 8); /* caps len after header */
 
     rv = rdpClientConSend(dev, clientCon, ls->data, len);
 
@@ -1124,6 +1125,8 @@ rdpClientConProcessMsgClientInfo(rdpPtr dev, rdpClientCon *clientCon)
     memcpy(&(clientCon->client_info), s->p - 4, bytes);
     clientCon->client_info.size = bytes;
 
+    // This shouldn't happen - xrdp should check the version we send it
+    // before sending client info.
     if (clientCon->client_info.version != CLIENT_INFO_CURRENT_VERSION)
     {
         LLOGLN(0, ("expected xrdp client_info version %d, got %d",
