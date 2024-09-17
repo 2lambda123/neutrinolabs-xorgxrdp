@@ -282,6 +282,9 @@ struct _rdpRec
     CARD32 last_event_time_ms;
     CARD32 last_wheel_time_ms;
 
+    int reverse_touch_vscroll; /* boolean */
+    int reverse_touch_hscroll; /* boolean */
+
     int conNumber;
 
     struct _rdpCounts counts;

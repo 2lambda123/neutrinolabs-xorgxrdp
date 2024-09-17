@@ -1646,6 +1646,35 @@ rdpClientConInit(rdpPtr dev)
     LLOGLN(0, ("rdpClientConInit: kill disconnected [%d] timeout [%d] sec",
                dev->do_kill_disconnected, dev->disconnect_timeout_s));
 
+    ptext = getenv("XRDP_REVERSE_TOUCH_VSCROLL");
+    if (ptext != 0)
+    {
+        i = atoi(ptext);
+        if (i == 0)
+        {
+            dev->reverse_touch_vscroll = 0;
+        }
+        else
+        {
+            dev->reverse_touch_vscroll = 1;
+        }
+    }
+
+    ptext = getenv("XRDP_REVERSE_TOUCH_HSCROLL");
+    if (ptext != 0)
+    {
+        i = atoi(ptext);
+        if (i == 0)
+        {
+            dev->reverse_touch_hscroll = 0;
+        }
+        else
+        {
+            dev->reverse_touch_hscroll = 1;
+        }
+    }
+    LLOGLN(0, ("rdpClientInit: reverse scroll vertical [%d] horizontal [%d]",
+               dev->reverse_touch_vscroll, dev->reverse_touch_hscroll));
 
     return 0;
 }
