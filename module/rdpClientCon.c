@@ -830,7 +830,7 @@ rdpClientConResizeAllMemoryAreas(rdpPtr dev, rdpClientCon *clientCon)
             dev->msFrameInterval = MIN_MS_BETWEEN_FRAMES;
             break;
     }
-    LLOGLN(0, ("    msFrameInterval %d", dev->msFrameInterval));
+    LLOGLN(0, ("    msFrameInterval %ld", (long)dev->msFrameInterval));
 
     rdpClientConAllocateSharedMemory(clientCon, bytes);
 
