@@ -2673,15 +2673,15 @@ rdpClientConSendPaintRectShmFd(rdpPtr dev, rdpClientCon *clientCon,
         out_uint32_le(s, clientCon->rect_id);
         out_uint32_le(s, id->shmem_bytes);
         out_uint32_le(s, id->shmem_offset);
-		if (capture_code == CC_SUF_RFX) /* rfx */
-		{
+        if (capture_code == CC_SUF_RFX) /* rfx */
+        {
             out_uint16_le(s, id->left);
             out_uint16_le(s, id->top);
             out_uint16_le(s, id->width);
             out_uint16_le(s, id->height);
-		}
-		else
-		{
+        }
+        else
+        {
             out_uint16_le(s, 0);
             out_uint16_le(s, 0);
             out_uint16_le(s, clientCon->cap_width);
